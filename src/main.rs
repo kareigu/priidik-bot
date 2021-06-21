@@ -13,8 +13,8 @@ struct Handler;
 #[async_trait]
 impl EventHandler for Handler {
   async fn message(&self, ctx: Context, msg: Message) {
-    if msg.content == "vanamehe" {
-      if let Err(err) = msg.channel_id.say(&ctx.http, "Vanaisa vanasia mis se on").await {
+    if msg.author.id.to_string() == "855177115104575518" {
+      if let Err(err) = msg.reply(&ctx.http, "Vanaisa vanaisa mis see on").await {
         println!("Error: {:?}", err);
       }
     }
