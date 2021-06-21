@@ -5,7 +5,7 @@ use tokio;
 use serenity::{
   async_trait,
   client::bridge::gateway::GatewayIntents,
-  model::{channel::Message, gateway::Ready},
+  model::{channel::Message, gateway::Ready, gateway::Activity},
   prelude::*,
 };
 
@@ -21,8 +21,10 @@ impl EventHandler for Handler {
     }
   }
 
-  async fn ready(&self, _: Context, ready: Ready) {
-    println!("{} running", ready.user.name);
+  async fn ready(&self, ctx: Context, ready: Ready) {
+    let activity = Activity::watching("vanaisa");
+    ctx.set_activity(activity).await;
+    println!("{}#{} running", ready.user.name, ready.user.discriminator);
   }
 }
 
