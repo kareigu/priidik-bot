@@ -4,6 +4,7 @@ use tokio;
 
 use serenity::{
   async_trait,
+  client::bridge::gateway::GatewayIntents,
   model::{channel::Message, gateway::Ready},
   prelude::*,
 };
@@ -35,6 +36,7 @@ async fn main() {
 
   let mut client = Client::builder(&token)
     .event_handler(Handler)
+    .intents(GatewayIntents::GUILDS | GatewayIntents::GUILD_MESSAGES)
     .await
     .expect("Error creating client");
   
