@@ -18,6 +18,10 @@ impl EventHandler for Handler {
       if let Err(err) = msg.reply(&ctx.http, "Vanaisa vanaisa mis see on").await {
         println!("Error: {:?}", err);
       }
+    } else if msg.content == "pena" {
+      if let Err(err) = msg.channel_id.say(&ctx.http, "<@134032786611765248> mis see on").await {
+        println!("Error: {:?}", err);
+      }
     }
   }
 
