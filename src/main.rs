@@ -25,12 +25,6 @@ impl EventHandler for Handler {
       if let Err(err) = msg.channel_id.say(&ctx.http, "<@855177115104575518> mis see on").await {
         println!("Error: {:?}", err);
       }
-    } else if msg.content == "pena100" {
-      for _ in 0..100 {
-        if let Err(err) = msg.channel_id.say(&ctx.http, "<@855177115104575518> mis see on").await {
-          println!("Error: {:?}", err);
-        }
-      }
     } else if msg.content == "&join" {
       let guild = msg.guild(&ctx.cache).await.unwrap();
       let guild_id = guild.id;
