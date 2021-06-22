@@ -950,6 +950,7 @@ version = "0.1.0"
 dependencies = [
  "dotenv",
  "rand 0.8.4",
+ "regex",
  "serenity",
  "songbird",
  "tokio",
