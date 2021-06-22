@@ -7,19 +7,23 @@ use serenity::{
 };
 
 pub struct VanaisaCommand {
-  name: String,
+  name: &'static str,
 }
 
 impl VanaisaCommand {
   pub fn new() -> Self {
     Self {
-      name: "vanaisa".to_string(),
+      name: "vanaisa",
     }
   }
 }
 
 #[async_trait]
 impl Command for VanaisaCommand {
+  fn name(&self) -> &'static str {
+    self.name
+  }
+
   fn requirement(&self, _ctx: &Context, msg: &Message) -> bool {
     msg.author.id.to_string() == "855177115104575518"
   }
@@ -28,6 +32,6 @@ impl Command for VanaisaCommand {
     if let Err(err) = msg.reply(&ctx.http, "Mis see on").await {
       println!("Error: {:?}", err);
     }
-    println!("{}", self.name);
+    self.log(ctx, msg);
   }
 }

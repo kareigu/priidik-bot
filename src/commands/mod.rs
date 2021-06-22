@@ -28,5 +28,13 @@ impl CommandList {
 pub trait Command {
   fn requirement(&self, ctx: &Context, msg: &Message) -> bool;
   async fn action(&self, ctx: Context, msg: Message);
+  fn name(&self) -> &'static str;
+  fn log(&self, ctx: Context, msg: Message) {
+    println!("{username}#{id} ran command {cmd_name}", 
+      username = msg.author.name,
+      id = msg.author.id,
+      cmd_name = self.name(),
+    )
+  }
 }
 

@@ -8,19 +8,23 @@ use serenity::{
 
 
 pub struct PenaCommand {
-  name: String,
+  name: &'static str,
 }
 
 impl PenaCommand {
   pub fn new() -> Self {
     Self {
-      name: "Pena".to_string(),
+      name: "Pena",
     }
   }
 }
 
 #[async_trait]
 impl Command for PenaCommand {
+  fn name(&self) -> &'static str {
+    self.name
+  }
+
   fn requirement(&self, _ctx: &Context, msg: &Message) -> bool {
     msg.content == "pena"
   }
@@ -29,5 +33,6 @@ impl Command for PenaCommand {
     if let Err(err) = msg.channel_id.say(&ctx.http, "<@855177115104575518> mis see on").await {
       println!("Error: {:?}", err);
     }
+    self.log(ctx, msg);
   }
 }
