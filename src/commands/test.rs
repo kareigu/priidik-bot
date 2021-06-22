@@ -8,6 +8,8 @@ use songbird::Songbird;
 use rand::Rng;
 use tokio::time::sleep;
 use std::sync::Arc;
+use std::future::Future;
+use std::pin::Pin;
 
 pub struct TestCommand {
   name: &'static str,
@@ -42,8 +44,6 @@ impl Command for TestCommand {
   }
 }
 
-use std::future::Future;
-use std::pin::Pin;
 fn play_mis(
   ctx: Context, 
   manager: Arc<Songbird>, 
@@ -71,8 +71,7 @@ fn play_mis(
   
       //println!("{:?}", source.seek_time(std::time::Duration::from_secs(0)));
       let mut handler = handler_lock.lock().await;
-      let handle = handler.play_source(source);
-      println!("{:?}", handle.metadata());
+      let _handle = handler.play_source(source);
       if let Err(err) = msg.channel_id.say(&ctx.http, "mis see on").await {
         println!("Error: {:?}", err);
       }

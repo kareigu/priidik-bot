@@ -29,7 +29,9 @@ impl EventHandler for Handler {
   async fn message(&self, ctx: Context, msg: Message) {
     let commands = {
       let data_read = ctx.data.read().await;
-      data_read.get::<Commands>().expect("No Commands in TypeMap storage").clone()
+      data_read.get::<Commands>()
+        .expect("No Commands in TypeMap storage")
+        .clone()
     };
 
     for cmd in &commands.as_ref().list {
