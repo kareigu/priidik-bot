@@ -16,16 +16,36 @@ use serenity::{
   prelude::*,
 };
 
+mod commands;
+use commands::Command;
+use commands::CommandList;
+
 struct Handler;
+
+struct Commands;
+
+impl TypeMapKey for Commands {
+  type Value = Arc<CommandList>;
+}
 
 #[async_trait]
 impl EventHandler for Handler {
   async fn message(&self, ctx: Context, msg: Message) {
-    if msg.author.id.to_string() == "855177115104575518" {
-      if let Err(err) = msg.reply(&ctx.http, "Vanaisa vanaisa mis see on").await {
-        println!("Error: {:?}", err);
+    let commands = {
+      let data_read = ctx.data.read().await;
+      data_read.get::<Commands>().expect("No Commands in TypeMap storage").clone()
+    };
+
+    for cmd in &commands.as_ref().list {
+      if cmd.requirement(&ctx, &msg)  {
+        cmd.action(ctx, msg).await;
+        break;
       }
-    } else if msg.content == "pena" {
+    }
+
+
+
+/*     else if msg.content == "pena" {
       if let Err(err) = msg.channel_id.say(&ctx.http, "<@855177115104575518> mis see on").await {
         println!("Error: {:?}", err);
       }
@@ -75,7 +95,7 @@ impl EventHandler for Handler {
         .expect("Songbird client error").clone();
 
       play_mis(ctx, manager, guild_id, msg).await;
-    }
+    } */
   }
 
   async fn ready(&self, ctx: Context, ready: Ready) {
@@ -123,7 +143,7 @@ fn play_mis(
       return;
     }
   
-    sleep(std::time::Duration::new(2, 0)).await;
+    sleep(std::time::Duration::new(180, 0)).await;
     play_mis(ctx, manager, guild_id, msg).await;
   })
 }
@@ -146,6 +166,12 @@ async fn main() {
     .register_songbird()
     .await
     .expect("Error creating client");
+
+  {
+    let mut data = client.data.write().await;
+
+    data.insert::<Commands>(Arc::new(CommandList::new()));
+  }
   
   if let Err(err) = client.start().await {
     println!("Client error: {:?}", err);
