@@ -1,10 +1,12 @@
 use dotenv;
 use std::env;
-use tokio;
+use tokio::{self, time::sleep};
 
-use songbird::SerenityInit;
+use songbird::{SerenityInit, Songbird};
 
-use rand::{Rng, rngs};
+use rand::{Rng};
+
+use std::sync::Arc;
 
 use serenity::{
   async_trait,
@@ -72,32 +74,7 @@ impl EventHandler for Handler {
       let manager = songbird::get(&ctx).await
         .expect("Songbird client error").clone();
 
-      if let Some(handler_lock) = manager.get(guild_id) {
-
-        let roll: i8 = rand::thread_rng().gen_range(1..10);
-
-        let filename = format!("mis{}.mp3", if roll < 10 { format!("0{}", roll)} else { roll.to_string() });
-        let path_str = format!("./audio/{}", filename);
-        let path = std::path::Path::new(&path_str);
-        let source = match songbird::ffmpeg(path).await {
-          Ok(source) => source,
-          Err(err) => {
-            println!("Error: {:?}", err);
-            if let Err(err) = msg.channel_id.say(&ctx.http, "ffmpeg error").await {
-              println!("Error: {:?}", err);
-            }
-            return;
-          },
-        };
-
-        //println!("{:?}", source.seek_time(std::time::Duration::from_secs(0)));
-        let mut handler = handler_lock.lock().await;
-        let handle = handler.play_source(source);
-        println!("{:?}", handle.metadata());
-        if let Err(err) = msg.channel_id.say(&ctx.http, "mis see on").await {
-          println!("Error: {:?}", err);
-        }
-      }
+      play_mis(ctx, manager, guild_id, msg).await;
     }
   }
 
@@ -106,6 +83,49 @@ impl EventHandler for Handler {
     ctx.set_activity(activity).await;
     println!("{}#{} running", ready.user.name, ready.user.discriminator);
   }
+}
+
+use std::future::Future;
+use std::pin::Pin;
+fn play_mis(
+  ctx: Context, 
+  manager: Arc<Songbird>, 
+  guild_id: serenity::model::id::GuildId,
+  msg: Message
+) -> Pin<Box<dyn Future<Output = ()> + Send>> {
+  Box::pin(async move {
+    if let Some(handler_lock) = manager.get(guild_id) {
+
+      let roll: i8 = rand::thread_rng().gen_range(1..10);
+  
+      let filename = format!("mis{}.mp3", if roll < 10 { format!("0{}", roll)} else { roll.to_string() });
+      let path_str = format!("./audio/{}", filename);
+      let path = std::path::Path::new(&path_str);
+      let source = match songbird::ffmpeg(path).await {
+        Ok(source) => source,
+        Err(err) => {
+          println!("Error: {:?}", err);
+          if let Err(err) = msg.channel_id.say(&ctx.http, "ffmpeg error").await {
+            println!("Error: {:?}", err);
+          }
+          return;
+        },
+      };
+  
+      //println!("{:?}", source.seek_time(std::time::Duration::from_secs(0)));
+      let mut handler = handler_lock.lock().await;
+      let handle = handler.play_source(source);
+      println!("{:?}", handle.metadata());
+      if let Err(err) = msg.channel_id.say(&ctx.http, "mis see on").await {
+        println!("Error: {:?}", err);
+      }
+    } else {
+      return;
+    }
+  
+    sleep(std::time::Duration::new(2, 0)).await;
+    play_mis(ctx, manager, guild_id, msg).await;
+  })
 }
 
 
