@@ -14,7 +14,7 @@ pub struct PenaCommand {
 impl PenaCommand {
   pub fn new() -> Self {
     Self {
-      name: "Pena",
+      name: "pena",
     }
   }
 }
