@@ -10,6 +10,7 @@ mod vanaisa;
 mod pena;
 mod join;
 mod leave;
+mod test;
 
 pub struct CommandList {
   pub list: Vec<Box<dyn Command + Send + Sync>>,
@@ -23,6 +24,7 @@ impl CommandList {
         Box::new(vanaisa::VanaisaCommand::new()),
         Box::new(join::JoinCommand::new()),
         Box::new(leave::LeaveCommand::new()),
+        Box::new(test::TestCommand::new()),
       ]
     }
   }
