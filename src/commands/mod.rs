@@ -1,9 +1,7 @@
-use std::collections::HashMap;
 use serenity::{
   async_trait,
   client::Context,
   model::channel::Message,
-  prelude::*,
 };
 
 mod vanaisa;

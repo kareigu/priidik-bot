@@ -1,11 +1,8 @@
 use dotenv;
 use std::env;
-use tokio::{self, time::sleep};
+use tokio::{self};
 
-use songbird::{SerenityInit, Songbird};
-
-use rand::{Rng};
-
+use songbird::SerenityInit;
 use std::sync::Arc;
 
 use serenity::{
@@ -17,7 +14,6 @@ use serenity::{
 };
 
 mod commands;
-use commands::Command;
 use commands::CommandList;
 
 struct Handler;
@@ -42,60 +38,6 @@ impl EventHandler for Handler {
         break;
       }
     }
-
-
-
-/*     else if msg.content == "pena" {
-      if let Err(err) = msg.channel_id.say(&ctx.http, "<@855177115104575518> mis see on").await {
-        println!("Error: {:?}", err);
-      }
-    } else if msg.content == "&join" {
-      let guild = msg.guild(&ctx.cache).await.unwrap();
-      let guild_id = guild.id;
-
-      let channel_id = guild
-        .voice_states.get(&msg.author.id)
-        .and_then(|vs|vs.channel_id);
-
-      let connect_to = match channel_id {
-        Some(ch) => ch,
-        None => {
-          if let Err(err) = msg.reply(&ctx.http, "Mis see on").await {
-            println!("Error: {:?}", err);
-          }
-          return;
-        }
-      };
-
-      let manager = songbird::get(&ctx).await
-        .expect("Songbird client error").clone();
-
-      let _handler = manager.join(guild_id, connect_to).await;
-    } else if msg.content == "&leave" {
-      let guild = msg.guild(&ctx.cache).await.unwrap();
-      let guild_id = guild.id;
-
-      let manager = songbird::get(&ctx).await
-        .expect("Songbird client error").clone();
-
-      if manager.get(guild_id).is_some() {
-        if let Err(err) = manager.remove(guild_id).await {
-          println!("Error {:?}", err);
-        }
-      } else {
-        if let Err(err) = msg.reply(&ctx.http, "Mis see on").await {
-          println!("Error: {:?}", err);
-        }
-      }
-    } else if msg.content == "&test" {
-      let guild = msg.guild(&ctx.cache).await.unwrap();
-      let guild_id = guild.id;
-
-      let manager = songbird::get(&ctx).await
-        .expect("Songbird client error").clone();
-
-      play_mis(ctx, manager, guild_id, msg).await;
-    } */
   }
 
   async fn ready(&self, ctx: Context, ready: Ready) {

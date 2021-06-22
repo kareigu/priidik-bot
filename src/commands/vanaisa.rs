@@ -3,7 +3,6 @@ use serenity::{
   async_trait,
   client::Context,
   model::channel::Message,
-  prelude::*,
 };
 
 pub struct VanaisaCommand {
