@@ -79,7 +79,7 @@ impl EventHandler for Handler {
       if let Some(handler_lock) = manager.get(guild_id) {
 
         let path = std::path::Path::new("./audio/Primogenitor_master-02.mp3");
-        let source = match songbird::ytdl("https://www.youtube.com/watch?v=FM_-DjMlnzE").await {
+        let source = match songbird::ffmpeg(path).await {
           Ok(source) => source,
           Err(err) => {
             println!("Error: {:?}", err);
@@ -118,7 +118,11 @@ async fn main() {
 
   let mut client = Client::builder(&token)
     .event_handler(Handler)
-    .intents(GatewayIntents::GUILDS | GatewayIntents::GUILD_MESSAGES)
+    .intents(
+      GatewayIntents::GUILDS | 
+      GatewayIntents::GUILD_MESSAGES | 
+      GatewayIntents::GUILD_VOICE_STATES
+    )
     .register_songbird()
     .await
     .expect("Error creating client");
