@@ -7,6 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serenity = { version = "0.10.8", default-features = false, features = ["client", "gateway", "rustls_backend", "model"] }
+serenity = { version = "0.10.8", default-features = false, features = ["client", "cache", "gateway", "rustls_backend", "model", "voice"] }
 dotenv = "0.15.0"
+songbird = "0.1.7"
 tokio = { version = "1.7.0", features = ["macros", "rt-multi-thread"] }
