@@ -9,6 +9,7 @@ use serenity::{
 use songbird::Songbird;
 use rand::Rng;
 use tokio::time::sleep;
+use std::time::Duration;
 
 pub struct JoinCommand {
   name: &'static str,
@@ -54,7 +55,7 @@ impl Command for JoinCommand {
       .expect("Songbird client error").clone();
 
     let _handler = manager.join(guild_id, connect_to).await;
-    play_voiceline(ctx.clone(), manager, guild_id, msg.clone()).await;
+    play_voiceline(ctx.clone(), manager, guild_id, msg.clone(), Duration::new(0, 420)).await;
     self.log(ctx, msg);
   }
 }
@@ -64,14 +65,22 @@ fn play_voiceline(
   ctx: Context, 
   manager: Arc<Songbird>, 
   guild_id: serenity::model::id::GuildId,
-  msg: Message
+  msg: Message,
+  prev_timer: Duration
 ) -> Pin<Box<dyn Future<Output = ()> + Send>> {
   Box::pin(async move {
     if let Some(handler_lock) = manager.get(guild_id) {
 
       let roll: i8 = rand::thread_rng().gen_range(1..10);
   
-      let filename = format!("mis{}.mp3", if roll < 10 { format!("0{}", roll)} else { roll.to_string() });
+      let filename = format!(
+        "mis{}.mp3", 
+        if roll < 10 { 
+          format!("0{}", roll)
+        } else { 
+          roll.to_string() 
+        }
+      );
       let path_str = format!("./audio/{}", filename);
       let path = std::path::Path::new(&path_str);
       let source = match songbird::ffmpeg(path).await {
@@ -85,17 +94,27 @@ fn play_voiceline(
         },
       };
   
-      //println!("{:?}", source.seek_time(std::time::Duration::from_secs(0)));
       let mut handler = handler_lock.lock().await;
       let _handle = handler.play_source(source);
-      if let Err(err) = msg.channel_id.say(&ctx.http, "mis see on").await {
+
+      let content = format!(
+        "mis see on
+        ||{}m {}s||", 
+        prev_timer.as_secs() / 60, 
+        prev_timer.as_secs()
+      );
+
+      if let Err(err) = msg.channel_id.say(&ctx.http, content).await {
         println!("Error: {:?}", err);
       }
     } else {
       return;
     }
-    
-    sleep(std::time::Duration::new(180, 0)).await;
-    play_voiceline(ctx, manager, guild_id, msg).await;
+
+    let secs_to_wait = rand::thread_rng().gen_range(3..1500);
+    let sleep_timer = Duration::new(secs_to_wait, 420);
+
+    sleep(sleep_timer).await;
+    play_voiceline(ctx, manager, guild_id, msg, sleep_timer).await;
   })
 }
