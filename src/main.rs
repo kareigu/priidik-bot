@@ -4,6 +4,8 @@ use tokio;
 
 use songbird::SerenityInit;
 
+use rand::{Rng, rngs};
+
 use serenity::{
   async_trait,
   client::Context,
@@ -72,7 +74,11 @@ impl EventHandler for Handler {
 
       if let Some(handler_lock) = manager.get(guild_id) {
 
-        let path = std::path::Path::new("./audio/Primogenitor_master-02.mp3");
+        let roll: i8 = rand::thread_rng().gen_range(1..10);
+
+        let filename = format!("mis{}.mp3", if roll < 10 { format!("0{}", roll)} else { roll.to_string() });
+        let path_str = format!("./audio/{}", filename);
+        let path = std::path::Path::new(&path_str);
         let source = match songbird::ffmpeg(path).await {
           Ok(source) => source,
           Err(err) => {
