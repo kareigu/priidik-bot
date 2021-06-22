@@ -9,6 +9,7 @@ use serenity::{
 mod vanaisa;
 mod pena;
 mod join;
+mod leave;
 
 pub struct CommandList {
   pub list: Vec<Box<dyn Command + Send + Sync>>,
@@ -20,7 +21,8 @@ impl CommandList {
       list: vec![
         Box::new(pena::PenaCommand::new()), 
         Box::new(vanaisa::VanaisaCommand::new()),
-        Box::new(join::JoinCommand::new())
+        Box::new(join::JoinCommand::new()),
+        Box::new(leave::LeaveCommand::new()),
       ]
     }
   }
