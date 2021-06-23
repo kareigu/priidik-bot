@@ -1,0 +1,5 @@
+services:
+  bot:
+    image: mxr/priidik-bot:latest
+    container_name: PriidikBot
+    restart: unless-stopped
