@@ -5,6 +5,8 @@ use serenity::{
   model::channel::Message,
 };
 
+use rand::Rng;
+
 pub struct VanaisaCommand {
   name: &'static str,
 }
@@ -24,7 +26,7 @@ impl Command for VanaisaCommand {
   }
 
   fn requirement(&self, _ctx: &Context, msg: &Message) -> bool {
-    msg.author.id.to_string() == "855177115104575518"
+    msg.author.id.to_string() == "855177115104575518" && rand::thread_rng().gen_bool(0.2)
   }
 
   async fn action(&self, ctx: Context, msg: Message) {
