@@ -23,6 +23,8 @@ impl JoinCommand {
   }
 }
 
+const VANAISA_ID: u64 = 857297760414728262;
+
 #[async_trait]
 impl Command for JoinCommand {
   fn name(&self) -> &'static str {
@@ -111,9 +113,21 @@ fn play_voiceline(
       return;
     }
 
+    sleep(Duration::new(1, 500_000_000)).await;
+    match ctx.cache.channel(VANAISA_ID).await {
+      Some(channel) => {
+        if let Err(err) = channel.id().say(&ctx.http, "(mis see on)").await {
+          println!("Error posting in comms channel: {:?}", err);
+        }
+      },
+      None => println!("Couldn't find comms channel"),
+    }
+
+
+
     let secs_to_wait = rand::thread_rng().gen_range(3..1500);
     let sleep_timer = Duration::new(secs_to_wait, 420);
-
+    
     sleep(sleep_timer).await;
     play_voiceline(ctx, manager, guild_id, msg, sleep_timer).await;
   })
