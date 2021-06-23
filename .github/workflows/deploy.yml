@@ -22,7 +22,7 @@ jobs:
           cd ${{ secrets.PROJECT_FOLDER }} 
           git fetch
           git checkout prod
-          git pull -u origin prod
+          git pull
           make docker
           docker-compose down
           docker-compose up -d
