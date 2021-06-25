@@ -99,11 +99,13 @@ fn play_voiceline(
       let mut handler = handler_lock.lock().await;
       let _handle = handler.play_source(source);
 
+      let secs = prev_timer.as_secs();
+
       let content = format!(
         "mis see on
         ||{}m {}s||", 
-        prev_timer.as_secs() / 60, 
-        prev_timer.as_secs()
+        secs / 60, 
+        secs - (secs / 60) 
       );
 
       if let Err(err) = msg.channel_id.say(&ctx.http, content).await {
