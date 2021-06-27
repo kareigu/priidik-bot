@@ -5,6 +5,7 @@ use serenity::{
   async_trait,
   client::Context,
   model::channel::Message,
+  model::id::GuildId,
 };
 use songbird::Songbird;
 use rand::Rng;
@@ -22,8 +23,6 @@ impl JoinCommand {
     }
   }
 }
-
-const VANAISA_ID: u64 = 857297760414728262;
 
 #[async_trait]
 impl Command for JoinCommand {
@@ -57,13 +56,41 @@ impl Command for JoinCommand {
       .expect("Songbird client error").clone();
 
     let _handler = manager.join(guild_id, connect_to).await;
-    play_voiceline(ctx.clone(), manager, guild_id, msg.clone(), Duration::new(0, 420)).await;
+    {
+      let queue_lock = {
+        let data = ctx.data.read().await;
+        data.get::<crate::Queue>()
+          .expect("No queue")
+          .clone()
+      };
+    
+    
+      let mut queue = queue_lock.write().await;
+      let current_time = crate::utils::get_current_time();
+
+      let secs_to_wait = rand::thread_rng().gen_range(3..15);
+      let data = crate::queue::VoiceLineData {
+        msg: msg.clone(),
+        ctx: ctx.clone(),
+        prev_time: current_time,
+        new_time: current_time + secs_to_wait,
+        time_spent: 0,
+        manager,
+      };
+      queue.insert(guild_id.into(), data);
+    }
+
+    //play_voiceline(ctx.clone(), manager, guild_id, msg.clone(), Duration::new(0, 420)).await;
+
+    
+    
+
     self.log(ctx, msg);
   }
 }
 
 
-fn play_voiceline(
+/* fn old_play_voiceline(
   ctx: Context, 
   manager: Arc<Songbird>, 
   guild_id: serenity::model::id::GuildId,
@@ -135,4 +162,5 @@ fn play_voiceline(
     sleep(sleep_timer).await;
     play_voiceline(ctx, manager, guild_id, msg, sleep_timer).await;
   })
-}
+} */
+
