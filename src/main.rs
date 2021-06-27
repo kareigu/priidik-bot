@@ -1,7 +1,7 @@
 use dotenv;
 use std::env;
 use std::sync::atomic::{AtomicBool, Ordering};
-use tokio::{self};
+use tokio::{self, sync::RwLock};
 
 use songbird::SerenityInit;
 use std::sync::Arc;
@@ -33,7 +33,6 @@ impl TypeMapKey for Commands {
 
 struct Queue;
 
-use tokio::sync::RwLock;
 
 impl TypeMapKey for Queue {
   type Value = Arc<RwLock<HashMap<GuildId, queue::VoiceLineData>>>;
@@ -64,7 +63,6 @@ impl EventHandler for Handler {
   }
 
   async fn cache_ready(&self, ctx: Context, _guilds: Vec<GuildId>) {
-
     if !self.loop_running.load(Ordering::Relaxed) {
       let data = ctx.data.clone();
 
@@ -113,26 +111,3 @@ async fn main() {
     println!("Client error: {:?}", err);
   }
 }
-
-use std::pin::Pin;
-use std::future::Future;
-
-/* fn cycle_queue(data: Arc<tokio::sync::RwLock<TypeMap>>) -> Pin<Box<dyn Future<Output = ()> + Send>> {
-  use crate::Queue;
-  Box::pin(async move {
-    let queue = {
-      let data = data.read().await;
-      data.get::<Queue>()
-        .expect("Nothing in queue")
-        .clone()
-    };
-
-    use tokio::time::sleep;
-    use std::time::Duration;
-    println!("h");
-    println!("{:?}", queue);
-    sleep(Duration::new(2, 0)).await;
-
-    cycle_queue(data).await;
-  })
-} */
