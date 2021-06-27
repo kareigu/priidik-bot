@@ -46,7 +46,7 @@ pub async fn queue_loop(queue_data: Arc<RwLock<TypeMap>>) {
   for i in queue.clone() {
     let nt = i.1.new_time;
     if nt <= current_time {
-      let secs_to_wait = rand::thread_rng().gen_range(3..15);
+      let secs_to_wait = rand::thread_rng().gen_range(3..1500);
       let data = update_times(
         i.1, 
         current_time, 
