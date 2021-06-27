@@ -44,12 +44,15 @@ pub async fn queue_loop(queue_data: Arc<RwLock<TypeMap>>) {
   let current_time = crate::utils::get_current_time();
 
   for i in queue.clone() {
-    if i.1.new_time <= current_time {
+    let nt = i.1.new_time;
+    if nt <= current_time {
       let secs_to_wait = rand::thread_rng().gen_range(3..15);
-      let mut data = i.1;
-      data.time_spent = current_time - data.prev_time;
-      data.prev_time = data.new_time;
-      data.new_time = current_time + secs_to_wait;
+      let data = update_times(
+        i.1, 
+        current_time, 
+        secs_to_wait
+      );
+      
       queue.insert(i.0, data.clone());
 
       play_voiceline(data, i.0.into()).await;
@@ -57,6 +60,17 @@ pub async fn queue_loop(queue_data: Arc<RwLock<TypeMap>>) {
   }
 
   sleep(Duration::new(1, 0)).await;
+}
+
+fn update_times(
+  mut data: VoiceLineData, 
+  current_time: u64, 
+  secs_to_wait: u64
+) -> VoiceLineData {
+  data.time_spent = current_time - data.prev_time;
+  data.prev_time = data.new_time;
+  data.new_time = current_time + secs_to_wait;
+  data
 }
 
 pub async fn play_voiceline(data: VoiceLineData, guild_id: GuildId) {
@@ -87,15 +101,7 @@ pub async fn play_voiceline(data: VoiceLineData, guild_id: GuildId) {
     let mut handler = handler_lock.lock().await;
     let _handle = handler.play_source(source);
 
-    let mins = data.time_spent / 60;
-    let secs = data.time_spent - mins * 60;
-
-    let content = format!(
-      "mis see on
-      ||{}m {}s||", 
-      mins, 
-      secs 
-    );
+    let content = format_message(data.time_spent);
 
     if let Err(err) = data.msg.channel_id.say(&data.ctx.http, content).await {
       println!("Error: {:?}", err);
@@ -112,5 +118,21 @@ pub async fn play_voiceline(data: VoiceLineData, guild_id: GuildId) {
       }
     },
     None => println!("Couldn't find comms channel"),
+  }
+}
+
+fn format_message(time_spent: u64) -> String {
+  let mins = time_spent / 60;
+  let secs = time_spent - mins * 60;
+
+  if secs == 0 {
+    "mis see on".to_string()
+  } else {
+    format!(
+      "mis see on
+      ||{}m {}s||", 
+      mins, 
+      secs 
+    )
   }
 }
