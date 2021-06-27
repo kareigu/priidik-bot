@@ -45,7 +45,6 @@ pub async fn queue_loop(queue_data: Arc<RwLock<TypeMap>>) {
 
   for i in queue.clone() {
     if i.1.new_time <= current_time {
-      println!("Timer finished");
       let secs_to_wait = rand::thread_rng().gen_range(3..15);
       let mut data = i.1;
       data.time_spent = current_time - data.prev_time;
@@ -54,8 +53,6 @@ pub async fn queue_loop(queue_data: Arc<RwLock<TypeMap>>) {
       queue.insert(i.0, data.clone());
 
       play_voiceline(data, i.0.into()).await;
-    } else {
-      println!("Timer in progress: {}s", i.1.new_time - current_time);
     }
   }
 
