@@ -77,7 +77,8 @@ impl Command for JoinCommand {
         time_spent: 0,
         manager,
       };
-      queue.insert(guild_id.into(), data);
+      queue.insert(guild_id.into(), data.clone());
+      crate::queue::play_voiceline(data, guild_id).await;
     }
 
     //play_voiceline(ctx.clone(), manager, guild_id, msg.clone(), Duration::new(0, 420)).await;
