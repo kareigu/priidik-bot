@@ -1,6 +1,6 @@
 [package]
 name = "priidik-bot"
-version = "0.1.0"
+version = "0.5.0"
 authors = ["mxr <eetu.kivelae@gmail.com>"]
 edition = "2018"
 
@@ -13,3 +13,5 @@ songbird = "0.1.7"
 rand = "0.8.4"
 regex = "1.5.4"
 tokio = { version = "1.7.0", features = ["macros", "rt-multi-thread"] }
+log = "0.4.14"
+env_logger = "0.8.4"

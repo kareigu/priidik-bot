@@ -40,9 +40,9 @@ impl Command for SecretCommand {
       let source = match songbird::ffmpeg(path).await {
         Ok(source) => source,
         Err(err) => {
-          println!("Error: {:?}", err);
+          error!("Error: {:?}", err);
           if let Err(err) = msg.channel_id.say(&ctx.http, "ffmpeg error").await {
-            println!("Error: {:?}", err);
+            error!("Error: {:?}", err);
           }
           return;
         },

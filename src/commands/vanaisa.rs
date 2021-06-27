@@ -31,7 +31,7 @@ impl Command for VanaisaCommand {
 
   async fn action(&self, ctx: Context, msg: Message) {
     if let Err(err) = msg.reply(&ctx.http, "Mis see on").await {
-      println!("Error: {:?}", err);
+      error!("Error: {:?}", err);
     }
     self.log(ctx, msg);
   }

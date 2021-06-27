@@ -36,12 +36,24 @@ impl Command for LeaveCommand {
 
     if manager.get(guild_id).is_some() {
       if let Err(err) = manager.remove(guild_id).await {
-        println!("Error {:?}", err);
+        error!("Error {:?}", err);
       }
     } else {
       if let Err(err) = msg.reply(&ctx.http, "Mis see on").await {
-        println!("Error: {:?}", err);
+        error!("Error: {:?}", err);
       }
+    }
+    {
+      let queue_lock = {
+        let data = ctx.data.read().await;
+        data.get::<crate::Queue>()
+          .expect("No queue")
+          .clone()
+      };
+    
+    
+      let mut queue = queue_lock.write().await;
+      queue.remove(&guild_id.into());
     }
     self.log(ctx, msg);
   }

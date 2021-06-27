@@ -2,13 +2,21 @@ use serenity::{
   async_trait,
   client::Context,
   model::channel::Message,
+  prelude::*
 };
+use std::sync::Arc;
 
 mod vanaisa;
 mod pena;
 mod join;
 mod leave;
 mod secret;
+
+pub struct Commands;
+
+impl TypeMapKey for Commands {
+  type Value = Arc<CommandList>;
+}
 
 pub struct CommandList {
   pub list: Vec<Box<dyn Command + Send + Sync>>,
@@ -35,7 +43,7 @@ pub trait Command {
   async fn action(&self, ctx: Context, msg: Message);
   fn name(&self) -> &'static str;
   fn log(&self, _ctx: Context, msg: Message) {
-    println!("{username}#{id} ran command {cmd_name}", 
+    info!("{username}#{id} ran command {cmd_name}", 
       username = msg.author.name,
       id = msg.author.id,
       cmd_name = self.name(),

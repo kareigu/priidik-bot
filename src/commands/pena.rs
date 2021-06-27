@@ -40,7 +40,7 @@ impl Command for PenaCommand {
     for _ in 0..5 {
       let content = format!("<@{}> mis see on", msg.author.id);
       if let Err(err) = msg.channel_id.say(&ctx.http, content).await {
-        println!("Error: {:?}", err);
+        error!("Error: {:?}", err);
       }
     }
     self.log(ctx, msg);
