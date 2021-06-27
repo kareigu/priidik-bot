@@ -2,13 +2,21 @@ use serenity::{
   async_trait,
   client::Context,
   model::channel::Message,
+  prelude::*
 };
+use std::sync::Arc;
 
 mod vanaisa;
 mod pena;
 mod join;
 mod leave;
 mod secret;
+
+pub struct Commands;
+
+impl TypeMapKey for Commands {
+  type Value = Arc<CommandList>;
+}
 
 pub struct CommandList {
   pub list: Vec<Box<dyn Command + Send + Sync>>,

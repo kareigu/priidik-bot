@@ -16,26 +16,15 @@ use serenity::{
 };
 
 mod commands;
-use commands::CommandList;
+use commands::{CommandList, Commands};
 
 mod queue;
+use queue::Queue;
+
 mod utils;
 
 struct Handler {
   loop_running: AtomicBool,
-}
-
-struct Commands;
-
-impl TypeMapKey for Commands {
-  type Value = Arc<CommandList>;
-}
-
-struct Queue;
-
-
-impl TypeMapKey for Queue {
-  type Value = Arc<RwLock<HashMap<GuildId, queue::VoiceLineData>>>;
 }
 
 #[async_trait]

@@ -10,7 +10,13 @@ use serenity::client::Context;
 use serenity::prelude::*;
 use std::time::Duration;
 use tokio::time::sleep;
-use crate::Queue;
+use std::collections::HashMap;
+
+pub struct Queue;
+
+impl TypeMapKey for Queue {
+  type Value = Arc<RwLock<HashMap<GuildId, VoiceLineData>>>;
+}
 
 #[derive(Clone)]
 pub struct VoiceLineData {
