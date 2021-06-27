@@ -40,7 +40,7 @@ impl Command for JoinCommand {
       Some(ch) => ch,
       None => {
         if let Err(err) = msg.reply(&ctx.http, "Mis see on").await {
-          println!("Error: {:?}", err);
+          error!("Error: {:?}", err);
         }
         return;
       }

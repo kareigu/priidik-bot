@@ -36,11 +36,11 @@ impl Command for LeaveCommand {
 
     if manager.get(guild_id).is_some() {
       if let Err(err) = manager.remove(guild_id).await {
-        println!("Error {:?}", err);
+        error!("Error {:?}", err);
       }
     } else {
       if let Err(err) = msg.reply(&ctx.http, "Mis see on").await {
-        println!("Error: {:?}", err);
+        error!("Error: {:?}", err);
       }
     }
     {

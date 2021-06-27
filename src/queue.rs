@@ -90,9 +90,9 @@ pub async fn play_voiceline(data: VoiceLineData, guild_id: GuildId) {
     let source = match songbird::ffmpeg(path).await {
       Ok(source) => source,
       Err(err) => {
-        println!("Error: {:?}", err);
+        error!("Error: {:?}", err);
         if let Err(err) = data.msg.channel_id.say(&data.ctx.http, "ffmpeg error").await {
-          println!("Error: {:?}", err);
+          error!("Error: {:?}", err);
         }
         return;
       },
@@ -104,7 +104,7 @@ pub async fn play_voiceline(data: VoiceLineData, guild_id: GuildId) {
     let content = format_message(data.time_spent);
 
     if let Err(err) = data.msg.channel_id.say(&data.ctx.http, content).await {
-      println!("Error: {:?}", err);
+      error!("Error: {:?}", err);
     }
   } else {
     return;
@@ -114,10 +114,10 @@ pub async fn play_voiceline(data: VoiceLineData, guild_id: GuildId) {
   match data.ctx.cache.channel(VANAISA_ID).await {
     Some(channel) => {
       if let Err(err) = channel.id().say(&data.ctx.http, "(mis see on)").await {
-        println!("Error posting in comms channel: {:?}", err);
+        error!("Error posting in comms channel: {:?}", err);
       }
     },
-    None => println!("Couldn't find comms channel"),
+    None => error!("Couldn't find comms channel"),
   }
 }
 

@@ -43,7 +43,7 @@ pub trait Command {
   async fn action(&self, ctx: Context, msg: Message);
   fn name(&self) -> &'static str;
   fn log(&self, _ctx: Context, msg: Message) {
-    println!("{username}#{id} ran command {cmd_name}", 
+    info!("{username}#{id} ran command {cmd_name}", 
       username = msg.author.name,
       id = msg.author.id,
       cmd_name = self.name(),
