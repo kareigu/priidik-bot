@@ -66,46 +66,12 @@ impl EventHandler for Handler {
   async fn cache_ready(&self, ctx: Context, _guilds: Vec<GuildId>) {
 
     if !self.loop_running.load(Ordering::Relaxed) {
-
       let data = ctx.data.clone();
-
 
       let queue_data = Arc::clone(&data);
       tokio::spawn(async move {
         loop {
-          let queue_lock = {
-            let data = queue_data.read().await;
-            data.get::<Queue>()
-              .expect("Nothing in queue")
-              .clone()
-          };
-  
-          let mut queue = queue_lock.write().await;
-      
-          use tokio::time::sleep;
-          use std::time::Duration;
-          //println!("{:?}", queue);
-
-          let current_time = utils::get_current_time();
-
-          for i in queue.clone() {
-            if i.1.new_time <= current_time {
-              println!("Timer finished");
-              use rand::Rng;
-              let secs_to_wait = rand::thread_rng().gen_range(3..15);
-              let mut data = i.1;
-              data.time_spent = current_time - data.prev_time;
-              data.prev_time = data.new_time;
-              data.new_time = current_time + secs_to_wait;
-              queue.insert(i.0, data.clone());
-
-              queue::play_voiceline(data, i.0.into()).await;
-            } else {
-              println!("Timer in progress: {}s", i.1.new_time - current_time);
-            }
-          }
-
-          sleep(Duration::new(1, 0)).await;
+          queue::queue_loop(Arc::clone(&queue_data)).await;
         }
       });
 

@@ -1,3 +1,4 @@
+use serenity::prelude::RwLock;
 use songbird::Songbird;
 use std::sync::Arc;
 use rand::Rng;
@@ -6,8 +7,10 @@ use serenity::model::{
   channel::Message,
 };
 use serenity::client::Context;
+use serenity::prelude::*;
 use std::time::Duration;
 use tokio::time::sleep;
+use crate::Queue;
 
 #[derive(Clone)]
 pub struct VoiceLineData {
@@ -21,6 +24,37 @@ pub struct VoiceLineData {
 
 
 const VANAISA_ID: u64 = 857297760414728262;
+
+pub async fn queue_loop(queue_data: Arc<RwLock<TypeMap>>) {
+  let queue_lock = {
+    let data = queue_data.read().await;
+    data.get::<Queue>()
+      .expect("Nothing in queue")
+      .clone()
+  };
+
+  let mut queue = queue_lock.write().await;
+
+  let current_time = crate::utils::get_current_time();
+
+  for i in queue.clone() {
+    if i.1.new_time <= current_time {
+      println!("Timer finished");
+      let secs_to_wait = rand::thread_rng().gen_range(3..15);
+      let mut data = i.1;
+      data.time_spent = current_time - data.prev_time;
+      data.prev_time = data.new_time;
+      data.new_time = current_time + secs_to_wait;
+      queue.insert(i.0, data.clone());
+
+      play_voiceline(data, i.0.into()).await;
+    } else {
+      println!("Timer in progress: {}s", i.1.new_time - current_time);
+    }
+  }
+
+  sleep(Duration::new(1, 0)).await;
+}
 
 pub async fn play_voiceline(data: VoiceLineData, guild_id: GuildId) {
   if let Some(handler_lock) = data.manager.get(guild_id) {
