@@ -84,8 +84,8 @@ async fn main() {
         })
         .intents(
             GatewayIntents::GUILDS
-                | GatewayIntents::GUILD_MESSAGES
-                | GatewayIntents::GUILD_VOICE_STATES,
+          | GatewayIntents::GUILD_MESSAGES
+          | GatewayIntents::GUILD_VOICE_STATES,
         )
         .register_songbird()
         .await
