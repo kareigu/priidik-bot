@@ -3,3 +3,6 @@ services:
     image: mxr/priidik-bot:latest
     container_name: PriidikBot
     restart: unless-stopped
+    volumes:
+      - ./.env:/usr/src/priidik/.env
+      - ./audio:/usr/src/priidik/audio

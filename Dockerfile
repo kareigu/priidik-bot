@@ -16,7 +16,7 @@ RUN rm src/*.rs
 COPY ./src ./src
 RUN cargo build --release
 
-FROM debian:buster-slim
+FROM debian:bookworm-slim
 
 WORKDIR /usr/src/priidik
 
@@ -25,7 +25,5 @@ RUN apt-get install libopus0
 RUN apt-get install -y --no-install-recommends ffmpeg
 
 COPY --from=rust_builder /usr/src/priidik/target/release/priidik-bot ./priidik
-COPY .env ./.env
-COPY ./audio ./audio
 
 CMD ./priidik
